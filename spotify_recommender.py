@@ -7,6 +7,9 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+%matplotlib qt
 
 # Set account info
 cid = '81fee852cceb4259910e7d2ff78493c3'
@@ -99,21 +102,10 @@ for sublist in bad_features:
     for item in sublist:
         bad_features_flat.append(item)
 
-# Create 'Like' and 'Dislike' dataframes
+# Create 'Like' dataframe
 like_df = pd.DataFrame.from_records(good_features_flat)
 
-good_uris = list(like_df['uri'])
-good_song_names = []
-for i in range(0, len(good_id_list)):
-    good_song_names.append(sp.track(good_uris[i]))
-
-good_song_names = []
-good_artists = []
-for i in range(0, 5):
-    response = sp.track(good_uris[i])
-    good_song_names.append(response['name'])
-    good_artists.append(response['artists'][0]['name'])
-
+# Retrieve song and artist names to add to dataframe
 good_song_names = []
 good_artists = []
 for index, row in like_df.iterrows():
@@ -128,8 +120,7 @@ for index, row in like_df.iterrows():
 like_df['song_name'] = good_song_names
 like_df['artist'] = good_artists
 
-len(like_df[like_df['song_name'] == 'Unknown'])
-
+'''
 # Get list of songs that returned error and re-search
 missed_songs = list(like_df['uri'][like_df['song_name'] == 'Unknown'])
 
@@ -170,3 +161,36 @@ v = like_df.filter(items='song_name')
 like_df[v.columns] = v.replace(s)
 v2 = like_df.filter(items='artist')
 like_df[v2.columns] = v2.replace(a)
+'''
+
+# Create 'Dislike' dataframe
+dislike_df = pd.DataFrame.from_records(bad_features_flat)
+
+# Retrieve song and artist names to add to dataframe
+bad_song_names = []
+bad_artists = []
+for index, row in dislike_df.iterrows():
+    try:
+        response = sp.track(str(row['uri']))
+        bad_song_names.append(response['name'])
+        bad_artists.append(response['artists'][0]['name'])
+    except SpotifyException as e:
+        bad_song_names.append('Unknown')
+        bad_artists.append('Unknown')
+
+dislike_df['song_name'] = bad_song_names
+dislike_df['artist'] = bad_artists
+
+
+###############################################
+######### Exploratory Data Analysis ###########
+###############################################
+
+
+trait_cols = ['danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness', 'acousticness',
+              'instrumentalness', 'liveness', 'valence', 'tempo', 'time_signature']
+like_df[trait_cols].describe()
+list(like_df)
+
+# Histograms
+like_df.hist(figsize=(4, 3), bins=50, xlabelsize=8, ylabelsize=8)
