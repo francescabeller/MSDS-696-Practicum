@@ -9,7 +9,7 @@ from spotipy.exceptions import SpotifyException
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-%matplotlib qt
+%matplotlib
 
 # Set account info
 cid = '81fee852cceb4259910e7d2ff78493c3'
