@@ -634,3 +634,122 @@ Accuracy using GNB:  60.1 %
 We can see that this accuracy score is just slightly below the top-performing AdaBoost.
 
 After looking at all of these initial models, AdaBoost performed the best, so we will move forward with this classifier for further tuning and re-testing.
+
+
+## Model Tuning
+
+Now, we can tune our AdaBoost model. First, we will import `GridSearchCV` and `KFold` from `sklearn'.
+```python3
+from sklearn.model_selection import GridSearchCV, KFold
+```
+`GridSearchCV` is a module that takes in specified lists of parameters and runs through them to try to determine the best combination of parameters for a model. `KFold` is used for cross-validation purposes.
+
+```python3
+crossvalidation = KFold(n_splits=10, shuffle=True, random_state=1)
+ada = AdaBoostClassifier()
+search_grid = {'n_estimators':[100,250,500,750,1000,1500,2000],'learning_rate':[.001,0.01,.1]}
+search = GridSearchCV(estimator=ada, param_grid=search_grid, scoring='accuracy', 
+                      n_jobs=1, cv=crossvalidation)
+```
+This block of code creates a cross-validation variable, assigns our AdaBoost classifier, creates sets of parameters, and then uses `GridSearchCV` to find the combination to best tune our model. We will fit the `search` output variable to our test sets and see the results.
+
+```python3
+search.fit(x_test, y_test)
+search.best_params_
+```
+```
+{'learning_rate': 0.1, 'n_estimators': 500}
+```
+We can see that the `GridSearchCV` found that a learning rate of 0.1 with 500 estimators is our best combination. Let's try this out and see if our accuracy improves.
+
+```python3
+ada2 = AdaBoostClassifier(n_estimators=500, learning_rate=0.1)
+ada2.fit(x_train, y_train)
+ada2_pred = ada2.predict(x_test)
+score = accuracy_score(y_test, ada2_pred) * 100
+print("Accuracy using AdaBoost: ", round(score, 1), "%")
+```
+```
+Accuracy using ada:  64.1 %
+```
+Our accuracy went up 3.6%, which is a good sign. For our final evaluation on the separate test playlist that was created, we will be looking for an accuracy of 75% or higher.
+
+## Model Re-Testing
+
+#### Import Test Data
+
+In order to re-test our model, we will need to bring in the separate test playlist and create a dataframe in the same manner we did with the original 'Like' and 'Dislike' playlists.
+
+```python3
+# Bring in test playlist
+test_ids = []
+pl_id = 'spotify:playlist:3NpYLX125c2wLIvTwtfHZm'
+offset = 0
+
+while True:
+    response = sp.playlist_tracks(pl_id,
+                                  offset=offset,
+                                  fields='items.track.id,total')
+    test_ids.append(response['items'])
+    offset = offset + len(response['items'])
+
+    if len(response['items']) == 0:
+        break
+
+# Flatten list of lists of JSON
+test_flatten = []
+for sublist in test_ids:
+    for item in sublist:
+        test_flatten.append(item)
+```
+```python3
+# Compile list of test track IDs
+test_id_list = []
+for i in range(0, len(test_flatten)):
+    test_id_list.append(test_flatten[i]['track']['id'])
+test_id_list = [x for x in test_id_list if x]
+
+# Retrieve track characteristics
+test_features = []
+for i in range(0, len(test_id_list)):
+    if not test_id_list[i]:
+        continue
+    else:
+        test_features.append(sp.audio_features(test_id_list[i]))
+
+# Flatten JSON list
+test_features_flat = []
+for sublist in test_features:
+    for item in sublist:
+        test_features_flat.append(item)
+ ```
+ ```python3
+ # Create test dataframe
+test_df = pd.DataFrame.from_records(test_features_flat)
+
+# Retrieve song and artist names to add to dataframe
+test_song_names = []
+test_artists = []
+for index, row in test_df.iterrows():
+    try:
+        response = sp.track(str(row['uri']))
+        test_song_names.append(response['name'])
+        test_artists.append(response['artists'][0]['name'])
+    except SpotifyException as e:
+        test_song_names.append('Unknown')
+        test_artists.append('Unknown')
+
+# Create 'song_name' and 'artist' columns
+test_df['song_name'] = test_song_names
+test_df['artist'] = test_artists
+```
+```python3
+# Assign boolean like/dislike values
+t = ([1] * 25) + ([0] * 25)
+
+test_df['target'] = t
+```
+
+#### Testing/Evaluation
+
+Now we can perform our re-testing and re-evaluation with our improved AdaBoost model.
