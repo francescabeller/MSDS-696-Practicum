@@ -356,18 +356,110 @@ Now we can move on to plotting.
 
 #### Dist Plots
 
+##### Tempo
+
 ```python3
-fig, ax = plt.subplots(len(trait_cols), figsize=(16,12))
-
-for i, col_val in enumerate(trait_cols):
-
-    sns.distplot(like_df[col_val], hist=True, ax=ax[i])
-    ax[i].set_title('Freq dist '+col_val, fontsize=10)
-    ax[i].set_xlabel(col_val, fontsize=8)
-    ax[i].set_ylabel('Count', fontsize=8)
+sns.distplot(like_df['tempo'], color='indianred', axlabel='Tempo')
+sns.distplot(dislike_df['tempo'], color='mediumslateblue')
+plt.show()
 ```
-![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/like_dist_plots.png?raw=true)
+![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/distplots_tempo.png?raw=true)
 
+##### Danceability
+
+```python3
+sns.distplot(like_df['danceability'], color='indianred', axlabel='Danceability')
+sns.distplot(dislike_df['danceability'], color='mediumslateblue')
+plt.show()
+```
+![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/distplots_danceability.png?raw=true)
+
+##### Energy
+
+```python3
+sns.distplot(like_df['energy'], color='indianred', axlabel='Energy')
+sns.distplot(dislike_df['energy'], color='mediumslateblue')
+plt.show()
+```
+![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/distplots_energy.png?raw=true)
+
+##### Loudness
+
+```python3
+sns.distplot(like_df['loudness'], color='indianred', axlabel='Loudness')
+sns.distplot(dislike_df['loudness'], color='mediumslateblue')
+plt.show()
+```
+![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/distplots_loudness.png?raw=true)
+
+##### Speechiness
+
+```python3
+sns.distplot(like_df['speechiness'], color='indianred', axlabel='Speechiness')
+sns.distplot(dislike_df['speechiness'], color='mediumslateblue')
+plt.show()
+```
+![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/distplots_speechiness.png?raw=true)
+
+##### Acousticness
+
+```python3
+sns.distplot(like_df['acousticness'], color='indianred', axlabel='Acousticness')
+sns.distplot(dislike_df['acousticness'], color='mediumslateblue')
+plt.show()
+```
+![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/distplots_acousticness.png?raw=true)
+
+##### Instrumentalness
+
+```python3
+sns.distplot(like_df['instrumentalness'], color='indianred', axlabel='Instrumentalness')
+sns.distplot(dislike_df['instrumentalness'], color='mediumslateblue')
+plt.show()
+```
+![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/distplots_instrumentalness.png?raw=true)
+
+
+##### Liveness
+
+```python3
+sns.distplot(like_df['liveness'], color='indianred', axlabel='Liveness')
+sns.distplot(dislike_df['liveness'], color='mediumslateblue')
+plt.show()
+```
+![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/distplots_liveness.png?raw=true)
+
+##### Valence
+
+```python3
+sns.distplot(like_df['valence'], color='indianred', axlabel='Valence')
+sns.distplot(dislike_df['valence'], color='mediumslateblue')
+plt.show()
+```
+![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/distplots_valence.png?raw=true)
+
+##### Key
+
+```python3
+sns.distplot(like_df['key'], color='indianred', axlabel='Tempo')
+sns.distplot(dislike_df['key'], color='mediumslateblue')
+plt.show()
+```
+![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/distplots_key.png?raw=true)
+
+#### Frequency Plots
+
+##### Time Signature & Mode
+
+```python3
+fig, ax = plt.subplots(2, 2)
+sns.countplot(like_df['time_signature'], ax=ax[0,0])
+sns.countplot(dislike_df['time_signature'], ax=ax[0,1])
+sns.countplot(like_df['mode'], ax=ax[1,0])
+sns.countplot(dislike_df['mode'], ax=ax[1,1])
+fig.show()
+```
+![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/freq_plots_mode_ts.png?raw=true)
 
 #### Pair Plots
 
