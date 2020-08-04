@@ -368,3 +368,23 @@ for i, col_val in enumerate(trait_cols):
 ```
 ![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/like_dist_plots.png?raw=true)
 
+
+#### Pair Plots
+
+##### 'Like' Playlist
+
+```python3
+like_pairplot = sns.pairplot(like_df[trait_cols])
+```
+
+![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/like_pairplot.png?raw=true)
+
+
+##### 'Dislike' Playlist
+
+```python3
+dislike_pairplot = sns.pairplot(dislike_df[trait_cols])
+```
+
+![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/dislike_pairplot.png?raw=true)
+
