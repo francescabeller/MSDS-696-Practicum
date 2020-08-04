@@ -638,7 +638,7 @@ After looking at all of these initial models, AdaBoost performed the best, so we
 
 ## Model Tuning
 
-Now, we can tune our AdaBoost model. First, we will import `GridSearchCV` and `KFold` from `sklearn'.
+Now, we can tune our AdaBoost model. First, we will import `GridSearchCV` and `KFold` from `sklearn`.
 ```python3
 from sklearn.model_selection import GridSearchCV, KFold
 ```
