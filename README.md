@@ -469,7 +469,7 @@ fig.show()
 like_pairplot = sns.pairplot(like_df[trait_cols])
 ```
 
-![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/like_pairplot.png?raw=true)
+![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/like_pairplot.png?raw=true)
 
 
 ##### 'Dislike' Playlist
@@ -478,5 +478,159 @@ like_pairplot = sns.pairplot(like_df[trait_cols])
 dislike_pairplot = sns.pairplot(dislike_df[trait_cols])
 ```
 
-![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/dislike_pairplot.png?raw=true)
+![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/dislike_pairplot.png?raw=true)
 
+#### Correlation Heatmaps
+
+##### 'Like' Playlist
+```python3
+# Calculate correlations
+corr = like_df[trait_cols].corr()
+ 
+# Heatmap
+like_corr_heatmap = sns.heatmap(corr)
+figure = like_corr_heatmap.get_figure() 
+```
+![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/like_corr_heatmap.png?raw=true)
+
+##### 'Dislike' Playlist
+```python3
+# Calculate correlations
+corr = dislike_df[trait_cols].corr()
+ 
+# Heatmap
+dislike_corr_heatmap = sns.heatmap(corr)
+figure = dislike_corr_heatmap.get_figure() 
+```
+![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/dislike_corr_heatmap.png?raw=true)
+
+
+## Model Creation/Training
+
+#### Preparation
+
+First, before we can start training models, we will need to add the like/dislike boolean tags to the data and generate a combined dataframe.
+
+```python3
+# Assign tags to liked and disliked songs
+like_df['target'] = 1
+dislike_df['target'] = 0
+
+# Create combined dataframe
+dfs = [like_df, dislike_df]
+full_df = pd.concat(dfs)
+```
+
+Next, we will use the `train_test_split` function from `sklearn` to split our full dataset into training and test sets.
+
+```python3
+# Creating training/test split
+from sklearn.model_selection import train_test_split
+train, test = train_test_split(full_df, test_size = 0.15)
+```
+
+The last bit of preparation will be to define our features and targets to finish creating our training/test sets.
+
+```python3
+#Define feature sets
+features = ['danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness', 'acousticness',
+              'instrumentalness', 'liveness', 'valence', 'tempo', 'time_signature']
+x_train = train[features]
+y_train = train["target"]
+x_test = test[features]
+y_test = test["target"]
+```
+
+#### Decision Tree
+
+The first model we will start with will be a decision tree classifier.
+
+```python3
+dtc = DecisionTreeClassifier(criterion='gini', 
+                             min_samples_split=100, 
+                             max_depth=11)
+
+dt = dtc.fit(x_train, y_train)
+y_pred = dtc.predict(x_test)
+score = accuracy_score(y_test, y_pred) * 100
+print("Accuracy using Decision Tree: ", round(score, 1), "%")
+```
+This initial model gives us an accuracy of...
+```python3
+Accuracy using Decision Tree:  58.1 %
+```
+
+#### K-Nearest Neighbors
+
+Next, we'll try a k-nearest neighbors model.
+
+```python3
+from sklearn.neighbors import KNeighborsClassifier
+
+knn = KNeighborsClassifier(3)
+knn.fit(x_train, y_train)
+knn_pred = knn.predict(x_test)
+score = accuracy_score(y_test, knn_pred) * 100
+print("Accuracy using KNN Tree: ", round(score, 1), "%")
+```
+Which yielded and accuracy of...
+```python3
+Accuracy using Knn Tree:  49.3 %
+```
+This is performing far below the decision tree, so we will not be moving forward with this model.
+
+#### AdaBoost/Gradient Boosting
+
+Now, we will try both an AdaBoost classifier and Gradient Boosting classifier.
+
+```python3
+# Import packages
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+```
+```python3
+ada = AdaBoostClassifier(n_estimators=100)
+ada.fit(x_train, y_train)
+ada_pred = ada.predict(x_test)
+score = accuracy_score(y_test, ada_pred) * 100
+print("Accuracy using ada: ", round(score, 1), "%")
+```
+Our AdaBoost classifier got an accuracy score of...
+```python3
+Accuracy using ada:  60.5 %
+```
+This puts it ahead of the original decision tree model, so as of this point, AdaBoost will be the one moving forward.
+
+Meanwhile, our Gradient Boosting classifier did not perform as well.
+```python3
+gbc = GradientBoostingClassifier(n_estimators=100, learning_rate=.1, max_depth=1, random_state=0)
+gbc.fit(x_train, y_train)
+predicted = gbc.predict(x_test)
+score = accuracy_score(y_test, predicted)*100
+print("Accuracy using Gbc: ", round(score, 1), "%")
+```
+```python3
+Accuracy using Gbc:  57.7 %
+```
+
+#### Naive Bayes
+
+The last initial model we will try is the Gaussian Naive Bayes.
+
+```python3
+from sklearn.naive_bayes import GaussianNB
+
+gnb = GaussianNB()  # instantiate model
+y_pred = gnb.fit(x_train, y_train).predict(x_test)
+
+# get classification metrics
+gnb_pred = ada.predict(x_test)
+score = accuracy_score(y_test, gnb_pred) * 100
+print("Accuracy using GNB: ", round(score, 1), "%")
+```
+```python3
+Accuracy using GNB:  60.1 %
+```
+We can see that this accuracy score is just slightly below the top-performing AdaBoost.
+
+After looking at all of these initial models, AdaBoost performed the best, so we will move forward with this classifier for further tuning and re-testing.
