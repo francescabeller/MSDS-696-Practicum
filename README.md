@@ -753,3 +753,45 @@ test_df['target'] = t
 #### Testing/Evaluation
 
 Now we can perform our re-testing and re-evaluation with our improved AdaBoost model.
+
+```python3
+from sklearn.metrics import confusion_matrix, classification_report
+
+adab = AdaBoostClassifier(n_estimators=500, learning_rate=0.1)
+adab.fit(x_train, y_train)
+adab_pred = adab.predict(test_df[features])
+score = accuracy_score(test_df['target'], adab_pred) * 100
+print("Accuracy using AdaBoost: ", round(score, 1), "%")
+
+# Add predictions to dataframe
+test_df['pred'] = adab_pred
+
+# Generate evaluation report
+print(classification_report(test_df['target'], test_df['pred'], 
+                            target_names=['Actual', 'Predicted']))
+
+# Generate confusion matrix
+confusion_matrix = pd.crosstab(test_df['target'], test_df['pred'], 
+                               rownames=['Actual'], colnames=['Predicted'])
+sns.heatmap(confusion_matrix, annot=True)
+plt.show()
+```
+
+Here's the output for our classification report:
+```python3
+Accuracy using AdaBoost:  78.0 %
+              precision    recall  f1-score   support
+
+      Actual       0.94      0.60      0.73        25
+   Predicted       0.71      0.96      0.81        25
+
+    accuracy                           0.78        50
+   macro avg       0.82      0.78      0.77        50
+weighted avg       0.82      0.78      0.77        50
+```
+
+And here is the confusion matrix heatmap:
+
+![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/test_confusion_matrix.png?raw=true)
+
+Our model was able to obtain an accuracy of 78% for our test set, which is above our target 75%! Looking at the confusion matrix, our model was able to correctly predict 24 out of 25 songs I liked, but only managed to get 15 out of 25 for songs I disliked. 
