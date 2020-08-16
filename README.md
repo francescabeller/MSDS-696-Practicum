@@ -942,3 +942,5 @@ sp3.user_playlist_add_tracks(user='francescab13',
                             playlist_id='3ltrx1uwJp4VciDPYBTG4r',
                             tracks=list(final_df['uri']))
 ```
+
+![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/spotify_playlist_preview.PNG?raw=true)
