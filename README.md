@@ -114,6 +114,12 @@ bad_flatten[0:5]
 
 #### Get track characteristic data
 
+Here is the list of audio features obtainable from the Spotify API:
+
+![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/audio_features_1.png?raw=true)
+![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/audio_features_2.png?raw=true)
+
+
 Now, we will have to retrieve the audio features for each of the tracks.
 
 ```python
