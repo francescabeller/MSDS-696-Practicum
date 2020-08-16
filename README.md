@@ -344,8 +344,12 @@ from pandas_profiling import ProfileReport
 ```
 ```python
 like_profile = ProfileReport(like_df, title='Liked Songs Pandas Profiling Report', explorative = True)
+```
+{% include liked_playlist_pandas_profile.html %}
+```python
 dislike_profile = ProfileReport(dislike_df, title='Disliked Songs Pandas Profiling Report', explorative = True)
 ```
+{% include disliked_playlist_pandas_profile.html %}
 
 ## Data Visualization
 
@@ -573,6 +577,7 @@ Next, we will use the `train_test_split` function from `sklearn` to split our fu
 ```python3
 # Creating training/test split
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 train, test = train_test_split(full_df, test_size = 0.15)
 ```
 
@@ -593,6 +598,8 @@ y_test = test["target"]
 The first model we will start with will be a decision tree classifier.
 
 ```python3
+from sklearn.tree import DecisionTreeClassifier
+
 dtc = DecisionTreeClassifier(criterion='gini', 
                              min_samples_split=100, 
                              max_depth=11)
