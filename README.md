@@ -795,3 +795,150 @@ And here is the confusion matrix heatmap:
 ![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/test_confusion_matrix.png?raw=true)
 
 Our model was able to obtain an accuracy of 78% for our test set, which is above our target 75%! Looking at the confusion matrix, our model was able to correctly predict 24 out of 25 songs I liked, but only managed to get 15 out of 25 for songs I disliked. 
+
+
+## AdaBoost Playlist Generator
+
+Now that our improved model has been tested, we can use it to help create a playlist generator that will take in the top 20 tracks from a profile for the week, filter it through the AdaBoost model, and insert into the placeholder Spotify playlist.
+
+#### Spotipy Instantiation
+
+Because we are performing a different functionality to the previous scope, we need to establish a new Spotipy instance for the `user-top-read` scope, which will allow us to retrieve the top 20 tracks.
+
+```python3
+scope = "user-top-read"
+red_uri = 'http://localhost:8080/callback'
+
+# Connect and create Spotify instance
+client_credentials_manager = SpotifyClientCredentials(client_id=cid, client_secret=secret)
+sp2 = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=cid, client_secret=secret,
+                                                scope=scope, redirect_uri=red_uri,
+                                                username='francescab13'))
+```
+
+#### Get Top 20 Tracks from Profile
+
+Next, we'll extract a list of URI's for the top 20 tracks
+
+```python3
+# Create list of liked track IDs
+liked_tracks = list(full_df['id'][full_df['target'] == 1])
+top_tracks = sp2.current_user_top_tracks(limit=20, offset=0, time_range='medium_term')
+top_20 = top_tracks['items']
+
+# Get nested JSON
+t20 = []
+for i in top_20:
+    t20.append(i['uri'])
+```
+
+#### Generate List of Recommended Songs
+
+With our URI's retrieved, we can run this list through Spotipy's `recommendations` function, which can take in a list of seed artists, tracks, or genres and generate recommended songs. Only five tracks/artists can be supplied at a time, so this will need to be done in four groups. For each track passed through, two songs will be output, giving us a total of 40 recommended songs.
+
+```python3
+# Create list of recommended songs
+# Note: Spotipy's 'recommendations' function can only take 5 track IDs at a time
+# Five songs will be added to the playlist for every five track IDs analyzed
+recs = []
+i = 0
+for i in range(0, len(t20)):
+    if i == 0:
+        recs.append(sp2.recommendations(seed_tracks=t20[0:5], limit=2))
+        i += 5
+    else:
+        recs.append(sp2.recommendations(seed_tracks=t20[i:i+5], limit=2))
+        i += 5
+ ```
+ 
+ We'll flatten this list and create a dataframe from it.
+ 
+ ```python3
+ rec_tracks = []
+for i in recs:
+    rec_tracks.append(i['tracks'])
+
+# Flatten list of lists of JSON
+rec_flatten = []
+for sublist in rec_tracks:
+    for item in sublist:
+        rec_flatten.append(item)
+rec_flatten[0:3]
+
+# Create dataframe
+rec_df = pd.DataFrame.from_records(rec_flatten)
+```
+
+#### Get Features for Recommended Songs
+
+Before we can run these 40 songs through the AdaBoost model, we need to retrieve the audio features like we did for the like/dislike/test playlists. First, we'll obtain the audio features and flatten the JSON list.
+
+```python3
+# Compile list of test track IDs
+rec_id_list = list(rec_df['uri'])
+
+# Retrieve track characteristics
+rec_features = []
+for i in range(0, len(rec_id_list)):
+    if not rec_id_list[i]:
+        continue
+    else:
+        rec_features.append(sp.audio_features(rec_id_list[i]))
+
+# Flatten JSON list
+rec_features_flat = []
+for sublist in rec_features:
+    for item in sublist:
+        rec_features_flat.append(item)
+```
+
+Then, we'll create a separate `feature_df` dataframe to hold the expanded `features` column from the `rec_df` dataframe. From there, we'll created a merged dataframe with all the necessary information to pass into the AdaBoost model.
+
+```python3
+# Add features column to dataframe
+rec_df['features'] = rec_features_flat
+
+# Separate out features into columns
+feature_df = pd.json_normalize(rec_df['features'])
+# Drop duplicate columns from feature_df
+feature_df.drop(['type', 'id', 'uri', 'track_href'], axis=1, inplace=True)
+
+# Concatenate feature dataframe with rec dataframe
+merged_df = pd.concat([rec_df, feature_df], axis=1, sort=False)
+```
+
+#### Filter Recommended Songs through AdaBoost Model
+
+Finally, we can take our merged dataframe and generate an output `final_df` dataframe which will only contain the recommended songs that the AdaBoost model predicted I would like.
+
+```python3
+adab = AdaBoostClassifier(n_estimators=500, learning_rate=0.1)
+adab.fit(x_train, y_train)
+adab_pred = adab.predict(merged_df[features])
+
+# Add AdaBoost predictions to dataframe
+merged_df['prediction'] = adab_pred
+
+# Filter down dataframe to only positive predictions
+final_df = merged_df[merged_df['prediction'] == 1]
+```
+
+### Add Filtered Songs to Playlist
+
+The last thing to do is generate another new Spotipy instance to use the `playlist-modify-public` scope and insert the songs into the placeholder playlist.
+
+```python3
+scope = 'playlist-modify-public'
+red_uri = 'http://localhost:8080/callback'
+
+# Connect and create Spotify instance
+client_credentials_manager = SpotifyClientCredentials(client_id=cid, client_secret=secret)
+sp3 = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=cid, client_secret=secret,
+                                                scope=scope, redirect_uri=red_uri,
+                                                username='francescab13'))
+
+# Create Spotify playlist
+sp3.user_playlist_add_tracks(user='francescab13',
+                            playlist_id='3ltrx1uwJp4VciDPYBTG4r',
+                            tracks=list(final_df['uri']))
+```
