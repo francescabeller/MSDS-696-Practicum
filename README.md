@@ -363,6 +363,9 @@ sns.distplot(like_df['tempo'], color='indianred', axlabel='Tempo')
 sns.distplot(dislike_df['tempo'], color='mediumslateblue')
 plt.show()
 ```
+We can see for the tempo plot that, while similar, my liked playlist seems to lean more to the slower tempo side than
+my disliked songs.
+
 ![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/distplots_tempo.png?raw=true)
 
 ##### Danceability
@@ -372,6 +375,10 @@ sns.distplot(like_df['danceability'], color='indianred', axlabel='Danceability')
 sns.distplot(dislike_df['danceability'], color='mediumslateblue')
 plt.show()
 ```
+The distribution plots of danceability appear to be extremely similar, with my disliked songs leaning
+only slightly on the more danceable side. This makes sense as I am not a huge fan of super upbeat
+club/dance type music.
+
 ![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/distplots_danceability.png?raw=true)
 
 ##### Energy
@@ -381,6 +388,11 @@ sns.distplot(like_df['energy'], color='indianred', axlabel='Energy')
 sns.distplot(dislike_df['energy'], color='mediumslateblue')
 plt.show()
 ```
+Again, we see that my liked and disliked playlists share a lot of overlap in this energy plot, with both
+being highly skewed to the left. For my liked songs, I appear to like a bit more energy, peaking at around 0.9.
+For my disliked songs, while there is also a peak around 0.9, the peak is smaller and counteracted by a peak at
+around 0.7.
+
 ![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/distplots_energy.png?raw=true)
 
 ##### Loudness
@@ -390,6 +402,10 @@ sns.distplot(like_df['loudness'], color='indianred', axlabel='Loudness')
 sns.distplot(dislike_df['loudness'], color='mediumslateblue')
 plt.show()
 ```
+A recurring theme in the distribution plots so far has been massive overlap, and the plot for loudness is no
+exception. The disliked songs peak slightly lower than the liked songs, at around -6, whereas the liekd songs peak
+at about -3 or -4. Both plots are slightly left-skewed.
+
 ![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/distplots_loudness.png?raw=true)
 
 ##### Speechiness
@@ -399,6 +415,9 @@ sns.distplot(like_df['speechiness'], color='indianred', axlabel='Speechiness')
 sns.distplot(dislike_df['speechiness'], color='mediumslateblue')
 plt.show()
 ```
+The plot for speechiness seems to indicate that I have a strong aversion to speechy songs, with both plots being
+highly right-skewed and peaking around 0. 
+
 ![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/distplots_speechiness.png?raw=true)
 
 ##### Acousticness
@@ -408,6 +427,9 @@ sns.distplot(like_df['acousticness'], color='indianred', axlabel='Acousticness')
 sns.distplot(dislike_df['acousticness'], color='mediumslateblue')
 plt.show()
 ```
+A similar plot to the previous speechiness distribution plot, we can see that my liked songs have a slightly higher
+peak around 0, with my disliked songs only being marginally more acoustic. 
+
 ![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/distplots_acousticness.png?raw=true)
 
 ##### Instrumentalness
@@ -417,6 +439,9 @@ sns.distplot(like_df['instrumentalness'], color='indianred', axlabel='Instrument
 sns.distplot(dislike_df['instrumentalness'], color='mediumslateblue')
 plt.show()
 ```
+Another plot in the same vein as speechiness and acousticness. My tastes between liked and disliked songs do not seem
+to be distinguishable based on this feature, with the peak bars at 0 being nearly identical between the two playlists.
+
 ![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/distplots_instrumentalness.png?raw=true)
 
 
@@ -427,6 +452,10 @@ sns.distplot(like_df['liveness'], color='indianred', axlabel='Liveness')
 sns.distplot(dislike_df['liveness'], color='mediumslateblue')
 plt.show()
 ```
+In this liveness plot, we get back to seeing a bit more separation between the two playlsits. While both peak at around
+0.1, the peak is higher for the liked playlist, and the dislike playlist leaning slightly lower. Both hold a similar 
+right skew and minor peak around 0.35.
+
 ![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/distplots_liveness.png?raw=true)
 
 ##### Valence
@@ -436,6 +465,11 @@ sns.distplot(like_df['valence'], color='indianred', axlabel='Valence')
 sns.distplot(dislike_df['valence'], color='mediumslateblue')
 plt.show()
 ```
+Even more differentiation is present in the plot for valence. My liked songs tend to lean lower in valence, which is a
+measure of the positiveness of a song. We see the peak for the liked playlist at around 0.3, with a sub-peak at about
+0.5. The disliked playlist plot is a bit more normal, with its primary peak being a little over 0.4 and tending to range
+higher than the liked playlist.
+
 ![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/distplots_valence.png?raw=true)
 
 ##### Key
@@ -445,6 +479,9 @@ sns.distplot(like_df['key'], color='indianred', axlabel='Tempo')
 sns.distplot(dislike_df['key'], color='mediumslateblue')
 plt.show()
 ```
+There do not appear to be major differences between the liked and disliked playlists for key. The only somewhat standout
+disparity is at around 7.5, meaning that I dislike songs in the G family of keys a bit more.
+
 ![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/distplots_key.png?raw=true)
 
 #### Frequency Plots
@@ -459,6 +496,10 @@ sns.countplot(like_df['mode'], ax=ax[1,0])
 sns.countplot(dislike_df['mode'], ax=ax[1,1])
 fig.show()
 ```
+Our frequency plots for mode and time signature do not seem to provide any noticeable insight, as the plots
+are incredibly similar. As is characteristic of most songs, a majority of both the liked and disliked songs
+fell in 4/4 time, and were in a major key as opposed to a minor key.
+
 ![alt text](https://github.com/francescabeller/MSDS-696-Practicum/blob/master/plots/freq_plots_mode_ts.png?raw=true)
 
 #### Pair Plots
