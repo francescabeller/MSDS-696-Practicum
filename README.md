@@ -1,6 +1,10 @@
 # MSDS-696-Practicum
 GitHub repository for MSDS-696 Data Science Practicum
 
+#### Jupyter Notebook
+
+Link to Jupyter Notebook view with all code ran: https://nbviewer.jupyter.org/github/francescabeller/MSDS-696-Practicum/blob/master/spotify_recommender.ipynb
+
 #### References
 https://spotipy.readthedocs.io/en/2.13.0/
 
