@@ -6,6 +6,10 @@ https://spotipy.readthedocs.io/en/2.13.0/
 
 https://github.com/plamere/spotipy/tree/master/examples
 
+# Motivation
+
+As an avid music listener, I'm constantly looking for new songs and artists. One of the ways I do this is by listening to my Discover Weekly playlist on Spotify, which is a weekly playlist that Spotify outputs for your account consisting of songs Spotify thinks you will like based on your most commonly listened to songs for the past week. However, my Discover Weekly playlists have a terrible hit rate in terms of including songs I end up liking/saving to my Liked Songs. Because of this, I decided I wanted to try to make an algorithm that takes into account two 1000+ song self-made playlists - one consisting of songs I like, one with songs I don't like. I thought that if I could try out a few different models and further refine whichever one performed the best, I could develop my own sort of Discover Weekly playlist generator that would perform better than Spotify's proprietary algorithm (at least for me personally). 
+
 # Spotify Recommendation Algorithm
 
 ### Spotify Authentication
@@ -345,11 +349,13 @@ from pandas_profiling import ProfileReport
 ```python
 like_profile = ProfileReport(like_df, title='Liked Songs Pandas Profiling Report', explorative = True)
 ```
-{% include liked_playlist_pandas_profile.html %}
+Here is the link to the interactive HTML page for the 'Liked Songs' playlist:
+http://htmlpreview.github.io/?https://github.com/francescabeller/MSDS-696-Practicum/blob/master/like_playlist_pandas_profile.html
 ```python
 dislike_profile = ProfileReport(dislike_df, title='Disliked Songs Pandas Profiling Report', explorative = True)
 ```
-{% include disliked_playlist_pandas_profile.html %}
+Here is the link to the interactive HTML page for the 'Disliked Songs' playlist:
+http://htmlpreview.github.io/?https://github.com/francescabeller/MSDS-696-Practicum/blob/master/dislike_playlist_pandas_profile.html
 
 ## Data Visualization
 
